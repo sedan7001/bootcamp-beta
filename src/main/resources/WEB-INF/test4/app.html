@@ -1,0 +1,23 @@
+<!doctype html>
+<html ng-app="app" data-logpresso-version="3.0">
+<head>
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<link rel="stylesheet" type="text/css" media="screen" href="/css/v3/app-initializer.css">
+</head>
+<body>
+<div ng-controller="AppContainerController">
+	<div id="app-container"></div>
+</div>
+
+<script src="/lib/jquery/jquery-2.1.1.js"></script>
+<script src="/script/app-initializer.js"></script>
+<script src="config.js"></script>
+<script>
+var path = decodeURIComponent(location.search.substr(3));
+var angular_modules = [];
+angular.bootstrap(document, parent.common.concat(angular_modules));
+
+</script>
+</body>
+</html>
