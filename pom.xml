@@ -80,24 +80,6 @@
 						</configuration>
 					</execution>
 					<execution>
-						<id>yarn install</id>
-						<goals>
-							<goal>yarn</goal>
-						</goals>
-						<configuration>
-							<arguments>install --no-optional</arguments>
-						</configuration>
-					</execution>	
-					<execution>
-						<id>install dependencies</id>
-						<goals>
-							<goal>yarn</goal>
-						</goals>
-						<configuration>
-							<arguments>install --ignore-optional --strict-ssl=false --ignore-scripts</arguments>
-						</configuration>
-					</execution>
-					<execution>
 						<id>build all</id>
 						<goals>
 							<goal>yarn</goal>
