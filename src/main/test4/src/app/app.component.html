@@ -205,15 +205,14 @@
   <div class="card highlight-card card-small">
 
 <input style="width:600px;" type="text" [(ngModel)]="query">
-<button (click)="init()">쿼리 실행</button>
+<button (click)="executeQuery()">쿼리 실행</button>
 </div>
   <h2>Query</h2>
   <div class="terminal">
     <pre>{{query}}</pre>
   </div>
-  
-  <h2 *ngIf="result">Result</h2>
-  <div *ngIf="result" class="terminal">
+  <h2 *ngIf="runQuery"> Result</h2>
+  <div *ngIf="runQuery" class="terminal">
       <pre *ngFor="let item of result">{{item | json}}</pre>
     </div>
 </div>
