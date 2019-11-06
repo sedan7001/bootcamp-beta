@@ -1,11 +1,11 @@
 # bootcamp-2019
 
-## 0. 사전준비
+## step 0. parser setting
 
-1. 3597브랜치로 풀 빌드.
-2. 3597캐시 다운로드
-3. yarn 설치
-4. run.sh복사
+1. issue3597 branch full build
+2. issue3597 cache extract
+3. yarn install
+4. run.sh
 5. export JAVA_HOME=`/usr/libexec/java_home -v 9`
 6. ./run.sh
 7. telnet localhost 7001
@@ -13,7 +13,8 @@
 9. bundle.install commons-cli commons-cli 1.4
 10. bundle.install file:///Users/mac/Documents/splunk-sdk-java-1.6.5.jar
 11. bundle.refresh
-12. pom.xml 파일 추가.
+12. bundle.start 000 000 000
+13. pom.xml
 	<details>
 	<summary>pom.xml</summary>
 	<div markdown="1">
@@ -207,11 +208,11 @@
 	</div>
 	</details>
 
-13. 루트 폴더에 splunk-sdk-java-1.6.5.jar 넣기.
-14. mvn install:install-file -DgroupId=com.splunk -DartifactId=splunk -Dversion=1.6.5.0 -Dpackaging=jar -Dfile=splunk-sdk-java-1.6.5.jar
-15. bootcamp/src/main 에 java 폴더채 넣기
-16. /Users/mac/Documents/bootcamp-2019/bootcamp-app/src/main/resources/metadata.xml 붙여넣기
-17. createSplunkProfile
+14. 루트 폴더에 splunk-sdk-java-1.6.5.jar 넣기.
+15. mvn install:install-file -DgroupId=com.splunk -DartifactId=splunk -Dversion=1.6.5.0 -Dpackaging=jar -Dfile=splunk-sdk-java-1.6.5.jar
+16. bootcamp/src/main 에 java 폴더채 넣기
+17. /Users/mac/Documents/bootcamp-2019/bootcamp-app/src/main/resources/metadata.xml 붙여넣기
+18. createSplunkProfile
 	```
 	bootcamp.createSplunkProfile
 	name?
@@ -225,15 +226,54 @@
 	password?
 	logpresso
 	```
-18. 시스템 설정 -> 파서 추가.
 19. 시스템 설정, 파서, 새 파서 만들기, 부트캠프, 스플렁크 깃헙 이벤트, 다음, event, 완료
 20.	쿼리 테스트 bootcamp name=test  query="search index=github"  | parse event
 
 
-## 1. createAppProject
+## step 1 ~ step 11
+- 애플리케이션 생성, 빌드
+- 앱을 로그프레소에 추가
+- 앵귤러 8.0
+- 시나리오 기반 데이터 연동
+- step1 ~ step11 git branch
+
+	안녕하세요 프론트 개발파트 강의를 맡은 개발자 김형태 입니다. 이번 실습에서는 총 11단계에 걸쳐 앱을 생성하고 빌드해서 로그프레소에 추가해 보겠습니다.
+
+	부트캠프 시나리오 기반 데이터를 연동해서 앱에서 보여주는 부분까지 진행하게 될 거구요.
+
+	애플리케이션 개발에 사용할 앵귤러 프레임워크는 가장 최신 버전인 8.0 을 사용하겠습니다.
+
+	중간에 하다가 막힌다거나 하시면 step1번부터 step11번까지 각각의 브랜치로 준비되어 있으니 필요하시면 체크아웃 하셔서 사용하시면 되겠습니다.
+	
+	그럼 먼저 터미널에서 로그프레소를 시작해 주겠습니다. telnet으로 7008번 포트로 접속해 줍니다.
+
+
+
+## step 1. createAppProject
+
 - logpresso.createAppProject
+	```
+	telnet localhost 7008
+	Trying ::1...
+	telnet: connect to address ::1: Connection refused
+	Trying 127.0.0.1...
+	Connected to localhost.
+	Escape character is '^]'.
+	login as: root
+	password:
+
+	Please change the default password.
+	New password:
+	Retype password:
+	Password changed successfully.
+
+	Logpresso 3.9.1.1 (build 20191029) on Araqne Core 3.4.5
+	``` 
+
+	여기서 입력한 부분들은 다음 단계에서 살펴보겠습니다.
 
 	```
+	logpresso.createAppProject
 	Project path? /Users/mac/Documents/bootcamp-2019/bootcamp-app
 	Bundle Symbolic Name? com.logpresso.bootcamp
 	Bundle Version? 1.0
@@ -250,13 +290,13 @@
 ## 2. manifest.json
 - manifest.json
 
-	스텝1에서 앱을 생성하면 manifest.json 파일이 생성되었을 것입니다. 
+	스텝1에서 앱을 생성하면 manifest.json 파일이 생성되었을 것입니다. 파일을 한번 열어볼까요
 
 	이 파일은, 앞에서 우리가 생상한 앱이 실행될 때의 시작 파라미터와 기본값을 담고 있는데요
 
-	이 메타데이터를 json 기반으로 선언해 줍니다. 이를 통해 앱의 이름, 시작할때 열리게 되는 페이지 등을 지정할 수 있습니다. 
+	이 메타데이터를 json 기반으로 작성해 줍니다. 이를 통해 앱의 이름, 시작할때 열리게 되는 페이지 등을 지정할 수 있습니다. 
 	
-	이 프로젝트에서는 다음과 같은 위치에 넣어줍니다.
+	이 프로젝트에서는 다음과 같은 위치에 넣어줍니다. 
 
 	>`/bootcamp-2019/bootcamp-app/src/main/resources/manifest.json`
 
@@ -271,11 +311,11 @@
 		},
 		"programs": [
 			{
-				"program_names": {         //대메뉴에 추가되는 메뉴 이름
+				"program_names": {       
 					"ko": "program_names", 
-					"en": "bootcamp"
+					"en": "program_names"
 				},
-				"program_id": "bootcamp",  //angular.json의  outputPath 폴더명
+				"program_id": "bootcamp", 
 				"program_profiles": [
 					"all",
 					"admin",
@@ -283,16 +323,17 @@
 				]
 			}
 		],
-		"app_id": "app_id", //서블렛에서 URL 맵핑
+		"app_id": "app_id", 
 		"bundle_version": "1.0.0"
 	}
 	```
+	예제 내용은 경로설정 하는 방법을 알려드리려고 현재 열린 파일과는 조금 다르게 설정 해봤는데요 여기서
 
-	`"program_names"` 은 대메뉴에 추가되는 메뉴 이름 부분입니다.
+	`"program_names"` 은 로그프레소 대메뉴에 추가되는 메뉴 이름 부분이구요
 
-	`"program_id"` 는 angular.json의  outputPath 폴더명과 일치시켜 줍니다.
+	`"program_id"` 는 나중에 생성될 angular.json의  outputPath 폴더명과 일치시켜 줘야 합니다.
 
-	`"app_id"` 는 서블렛에서 URL 맵핑됩니다. 
+	`"app_id"` 는 서블렛에서 URL 맵핑되는 부분이 되겠습니다. 
 
 
 ## 3. Angular-cli 로 프로젝트 생성
@@ -301,7 +342,7 @@
 
 	앵귤러 cli는 프로젝트 생성부터 템플릿 자동생성, 개발 서버, 배포, 테스트 등을 지원합니다. 
 	
-	이렇게 다양한 기능을 제공하는 앵귤러cli는 앵귤러 프로젝트를 진행하는데 필요한 만능 개발도구죠.
+	이렇게 다양한 기능을 제공하기 때문에 앵귤러 프로젝트를 진행하는데는 필수 개발도구입니다.
 
 	그럼 바로 설치해 보겠습니다. 터미널을 열고 다음 명령어를 입력합니다. 
 
@@ -314,7 +355,7 @@
 	```
 - ng 명령어
 
-	설치가 완료되면 이제 ng 명령어를 사용할 수 있는데요 다음 명령어로 설치된 앵귤러 버전을 확인할 수 있습니다. 현재 버전은 앵귤러8 버전이네요.
+	설치가 완료되면 이제 ng 명령어를 사용할 수 있는데요 그럼 한번 명령어로 설치된 앵귤러 버전을 확인해 보겠습니다. 현재 버전은 앵귤러8.3.1 버전이네요.
 	```
 	ng --version
 	```
@@ -323,7 +364,7 @@
 
 - ng new
 
-	앵귤러 cli의 프로젝트 생성 명령은 `ng new` 입니다. 이를 이용해 프로젝트를 생성해 줍시다.
+	앵귤러 cli의 프로젝트 생성 명령은 `ng new` 입니다. 이를 이용해 프로젝트를 생성해 보겠습니다. 이 경로로 들어가셔서 ng new bootcamp
 	>`/bootcamp-2019/bootcamp-app/src/main/`
 	```
 	ng new bootcamp
@@ -332,12 +373,14 @@
 ## 4. outputPath, base href 경로 수정
 - outputPath
 
+	이번에는 angular.json파일을 열고 outputPath를 수정해 주겠습니다.
 	앵귤러 프로젝트의 빌드 결과가 저장되는 폴더입니다. 이 폴더명이 스텝 2에서 지정한 program_id 로 인식됩니다.
 	>`/bootcamp-2019/bootcamp-app/src/main/bootcamp/angular.json`
 	```
 	"outputPath": "../resources/WEB-INF/bootcamp",
 	```
 
+	이 경로로 들어가셔서 index.html 을 수정하겠습니다. 로그프레소에서 인식하는 html 루트 경로를 맞춰줍니다.
 - base href	
 	>`/bootcamp-2019/bootcamp-app/src/main/bootcamp/src/index.html`
 	```
@@ -348,7 +391,7 @@
 ## 5. 빌드, 로그프레소 대메뉴에 추가하기
 - ng build
 
-	이제 앞에서 생성한 앵귤러 프로젝트로 개발한 앱을 로그프레소 대메뉴에 추가해 보겠습니다.
+	이제 앞에서 생성한 앵귤러 프로젝트로 생성한 앱을 로그프레소 대메뉴에 추가해 보겠습니다.
 	
 	앵귤러 프로젝트를 빌드해주는 명령어 ng build를 실행해 줍니다.
 	>`/bootcamp-2019/bootcamp-app/src/main/bootcamp/`
@@ -358,9 +401,12 @@
 
 - buildApp
 
-	생성한 앵귤러 프로젝트를 빌드하여 번들 jar파일로 만들어 줍니다.
+	생성한 앵귤러 프로젝트를 빌드하여 번들 jar파일로 만들어 주겠습니다.
 
-	빌드 후 생성된 번들 jar 파일을 install 해 줍니다.
+	그리고 빌드 후 생성된 번들 jar 파일을 install 해주고 refresh 후에 start 해 줍니다.
+
+	빌드앱을 해주면 로그프레소에 앱이 등록이 되기 때문에 이후에는 
+
 	```
 	logpresso.buildApp /Users/mac/Documents/bootcamp-2019/bootcamp-app /Users/mac/Documents/bootcamp-2019/bootcamp-app/bootcamp-app-1.0.0.jar
 	bundle.install file:///Users/mac/Documents/bootcamp-2019/bootcamp-app/bootcamp-app-1.0.0.jar
@@ -370,7 +416,7 @@
 
 - 맵핑된 URL
 
-	아래 명령어를 입력하면 매핑된 URL을 확인할 수 있습니다. 스텝2에서 지정한 app_id 입니다.
+	한번 서블릿에 맵핑된 URL을 확인해 보겠습니다. 아래 명령어를 입력하시면 확인이 가능하구요. 이미지는 제가 아까 예제로 스텝2에서 지정한 app_id 부분 입니다.
 	```
 	httpd.contexts
 	```
@@ -378,7 +424,7 @@
 
 - 등록된 프로그램
 
-	이번에는 program_id를 확인해 볼까요?
+	스텝2에서 지정한 program_id 는 dom.programs localhost 라고 입력하시면 됩니다.
 	```
 	dom.programs localhost
 	```
@@ -386,11 +432,11 @@
 
 - 메뉴에 추가된 앱 확인.
 
-	이제 브라우저를 열고 `localhost:8888` 주소를 입력해 봅시다. 
+	이제 브라우저를 열고 `localhost:8888` 주소를 입력해 보겠습니다. 
 
-	스텝5까지 잘 진행되었다면 대메뉴의 가장 오른쪽에 우리가 만든 앱이 추가된 것을 확인할 수 있을 것입니다.
+	여기까지 잘 진행되었다면 대메뉴 가장 오른쪽에 방금 만든 앱이 추가가 되었을 된 것을 확인할 수 있을 것입니다.
 
-	현재 URL을 보시면 앞서 manifest.json에서 설정한 app_id/program_id 를 확인할 수 있습니다.
+	현재 URL을 보시면 앞서 step2의 manifest.json에서 설정한 app_id/program_id 를 확인할 수 있습니다.
 	```
 	localhost:8888
 	```
@@ -426,7 +472,7 @@
 
 - tsconfig.json
 
-	여기서는 타입스크립트가 컴파일 되어질 ecma스크립트 버전을 수정해 줍니다. target과 lib를 수정합니다.
+	여기서는 타입스크립트가 컴파일 되어질 ecma스크립트 버전을 수정해 주겠습니다. target과 lib를 수정합니다.
 	>`/bootcamp-2019/bootcamp-app/src/main/bootcamp/tsconfig.json`
 
 	```
