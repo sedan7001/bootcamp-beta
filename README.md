@@ -234,17 +234,17 @@
 - logpresso.createAppProject
 
 	```
-	logpresso.createAppProject
-	/Users/mac/Documents/bootcamp-2019/bootcamp-app
-	com.logpresso.bootcamp
-	1.0
-	bootcamp
-	bootcamp
-	1.0
-	4.0
-	bootcamp
-	bootcamp
-	all,admin,member
+	Project path? /Users/mac/Documents/bootcamp-2019/bootcamp-app
+	Bundle Symbolic Name? com.logpresso.bootcamp
+	Bundle Version? 1.0
+	App ID? bootcamp
+	App Name? bootcamp
+	App Version? 1.0
+	Required Version (empty line to default version 3.0)?4.0
+	Program ID (empty line to exit)? bootcamp
+	Program Display Name? bootcamp
+	Program Profiles? all,admin,member
+	Program ID (empty line to exit)?
 	```
 
 ## 2. manifest.json
@@ -308,7 +308,10 @@
 	```
 	yarn global add @angular/cli
 	```
-
+	```
+	? Would you like to add Angular routing? Yes
+	? Which stylesheet format would you like to use? Less
+	```
 - ng 명령어
 
 	설치가 완료되면 이제 ng 명령어를 사용할 수 있는데요 다음 명령어로 설치된 앵귤러 버전을 확인할 수 있습니다. 현재 버전은 앵귤러8 버전이네요.
@@ -330,31 +333,39 @@
 - outputPath
 
 	앵귤러 프로젝트의 빌드 결과가 저장되는 폴더입니다. 이 폴더명이 스텝 2에서 지정한 program_id 로 인식됩니다.
-	>`/bootcamp-2019/bootcamp-app/src/main/ts/angular.json`
+	>`/bootcamp-2019/bootcamp-app/src/main/bootcamp/angular.json`
 	```
 	"outputPath": "../resources/WEB-INF/bootcamp",
 	```
 
 - base href	
-	>`/bootcamp-2019/bootcamp-app/src/main/test4/src/index.html`
+	>`/bootcamp-2019/bootcamp-app/src/main/bootcamp/src/index.html`
 	```
 	<base href="./">
 	```
 
 
 ## 5. 빌드, 로그프레소 대메뉴에 추가하기
+- ng build
+
+	이제 앞에서 생성한 앵귤러 프로젝트로 개발한 앱을 로그프레소 대메뉴에 추가해 보겠습니다.
+	
+	앵귤러 프로젝트를 빌드해주는 명령어 ng build를 실행해 줍니다.
+	>`/bootcamp-2019/bootcamp-app/src/main/bootcamp/`
+	```
+	ng build
+	```
 
 - buildApp
-	
-	이제 앞에서 생성한 앵귤러 프로젝트로 개발한 앱을 로그프레소 대메뉴에 추가해 보겠습니다.
 
 	생성한 앵귤러 프로젝트를 빌드하여 번들 jar파일로 만들어 줍니다.
 
 	빌드 후 생성된 번들 jar 파일을 install 해 줍니다.
 	```
-	logpresso.buildApp /Users/mac/Documents/bootcamp-2019/bootcamp-app /Users/mac/Documents/bootcamp-2019/bootcamp-app/bootcamp-1.0.0.jar
+	logpresso.buildApp /Users/mac/Documents/bootcamp-2019/bootcamp-app /Users/mac/Documents/bootcamp-2019/bootcamp-app/bootcamp-app-1.0.0.jar
 	bundle.install file:///Users/mac/Documents/bootcamp-2019/bootcamp-app/bootcamp-app-1.0.0.jar
 	bundle.refresh
+	bundle.start 113
 	```
 
 - 맵핑된 URL
@@ -364,6 +375,14 @@
 	httpd.contexts
 	```
 	<img src="./image/servlet.png">
+
+- 등록된 프로그램
+
+	이번에는 program_id를 확인해 볼까요?
+	```
+	dom.programs localhost
+	```
+	<img src="./image/programs.png">
 
 - 메뉴에 추가된 앱 확인.
 
@@ -376,7 +395,6 @@
 	localhost:8888
 	```
 	<img src="./image/add-menu.png">
-
 
 ## 6. eediom-sdk, material-cdk
 
@@ -413,45 +431,6 @@
 
 	```
 	{
-	"compileOnSave": false,
-	"compilerOptions": {
-		"baseUrl": "./",
-		"outDir": "./dist/out-tsc",
-		"sourceMap": true,
-		"declaration": false,
-		"downlevelIteration": true,
-		"experimentalDecorators": true,
-		"module": "esnext",
-		"moduleResolution": "node",
-		"importHelpers": true,
-		"target": "es5",
-		"typeRoots": [
-		"node_modules/@types"
-		],
-		"lib": [
-		"es2015",
-		"es2016",
-		"es2017",
-		"es2018",
-		"dom"
-		]
-	},
-	"angularCompilerOptions": {
-		"preserveWhitespaces": true,
-		"fullTemplateTypeCheck": true,
-		"strictInjectionParameters": true
-	}
-	}
-	```
-
-- package.json
-
-	bin과 ,script 부분을 수정해 줍니다.
-
-	>`/bootcamp-2019/bootcamp-app/src/main/bootcamp/package.json`
-
-	```
-	{
 		"compileOnSave": false,
 		"compilerOptions": {
 			"baseUrl": "./",
@@ -476,8 +455,74 @@
 			]
 		},
 		"angularCompilerOptions": {
+			"preserveWhitespaces": true,
 			"fullTemplateTypeCheck": true,
 			"strictInjectionParameters": true
+		}
+	}
+	```
+
+- package.json
+
+	bin과 ,script 부분을 수정해 줍니다.
+
+	>`/bootcamp-2019/bootcamp-app/src/main/bootcamp/package.json`
+
+	```
+	{
+		"name": "test4",
+		"version": "0.0.0",
+		"bin": {
+			"node": "node/node",
+			"yarn": "node/yarn/dist/bin/yarn",
+			"ng": "node/node node_modules/@angular/cli/bin/ng"
+		},
+		"scripts": {
+			"ng": "ng",
+			"start": "ng serve --base-href=/ --open",
+			"build": "ng build --output-hashing=none --prod --build-optimizer=false",
+			"test": "ng test",
+			"lint": "ng lint",
+			"e2e": "ng e2e"
+		},
+		"private": true,
+		"dependencies": {
+			"@angular/animations": "~8.2.11",
+			"@angular/cdk": "~8.2.3",
+			"@angular/common": "~8.2.11",
+			"@angular/compiler": "~8.2.11",
+			"@angular/core": "~8.2.11",
+			"@angular/forms": "~8.2.11",
+			"@angular/material": "^8.2.3",
+			"@angular/platform-browser": "~8.2.11",
+			"@angular/platform-browser-dynamic": "~8.2.11",
+			"@angular/router": "~8.2.11",
+			"eediom-sdk": "https://github.com/logpresso/eediom-sdk.git#v1.0.5",
+			"hammerjs": "^2.0.8",
+			"rxjs": "~6.4.0",
+			"tslib": "^1.10.0",
+			"zone.js": "~0.9.1"
+		},
+		"devDependencies": {
+			"@angular-devkit/build-angular": "~0.803.14",
+			"@angular/cli": "~8.3.14",
+			"@angular/compiler-cli": "~8.2.11",
+			"@angular/language-service": "~8.2.11",
+			"@types/jasmine": "~3.3.8",
+			"@types/jasminewd2": "~2.0.3",
+			"@types/node": "~8.9.4",
+			"codelyzer": "^5.0.0",
+			"jasmine-core": "~3.4.0",
+			"jasmine-spec-reporter": "~4.2.1",
+			"karma": "~4.1.0",
+			"karma-chrome-launcher": "~2.2.0",
+			"karma-coverage-istanbul-reporter": "~2.0.1",
+			"karma-jasmine": "~2.0.1",
+			"karma-jasmine-html-reporter": "^1.4.0",
+			"protractor": "~5.4.0",
+			"ts-node": "~7.0.0",
+			"tslint": "~5.15.0",
+			"typescript": "~3.5.3"
 		}
 	}
 	```
@@ -497,20 +542,20 @@
 	import { ServiceModule, QueryService } from 'eediom-sdk';
 	import { FormsModule } from '@angular/forms';
 	@NgModule({
-	declarations: [
-		AppComponent
-	],
-	imports: [
-		BrowserModule,
-		AppRoutingModule,
-		BrowserAnimationsModule,
-		ServiceModule.forRoot({
-		productName: 'Araqne'
-		}),
-		FormsModule
-	],
-	providers: [QueryService],
-	bootstrap: [AppComponent]
+		declarations: [
+			AppComponent
+		],
+		imports: [
+			BrowserModule,
+			AppRoutingModule,
+			BrowserAnimationsModule,
+			ServiceModule.forRoot({
+				productName: 'Araqne'
+			}),
+			FormsModule
+		],
+		providers: [QueryService],
+		bootstrap: [AppComponent]
 	})
 	export class AppModule { }
 	```
@@ -747,7 +792,7 @@
 	>`/bootcamp-2019/bootcamp-app/src/main/bootcamp/`
 
 	```
-	yes | cp -rf ../../../../../Downloads/sdk ./node_modules/eediom-sdk
+	yes | cp -rf ../../../../../../Downloads/sdk ./node_modules/eediom-sdk
 	```
 
 - pom.xml 수정(eediom-sdk 수정전 임시사용)
@@ -835,24 +880,6 @@
 								<nodeVersion>v11.7.0</nodeVersion>
 								<yarnVersion>v1.13.0</yarnVersion>
 								<downloadRoot>http://staging.araqne.org/nodejs/dist/</downloadRoot>
-							</configuration>
-						</execution>
-						<execution>
-							<id>yarn install</id>
-							<goals>
-								<goal>yarn</goal>
-							</goals>
-							<configuration>
-								<arguments>install --no-optional</arguments>
-							</configuration>
-						</execution>	
-						<execution>
-							<id>install dependencies</id>
-							<goals>
-								<goal>yarn</goal>
-							</goals>
-							<configuration>
-								<arguments>install --ignore-optional --strict-ssl=false --ignore-scripts</arguments>
 							</configuration>
 						</execution>
 						<execution>
@@ -956,7 +983,7 @@
 
 	```
 	mvn clean install
-	bundle.replace 115 file:///Users/mac/Documents/bootcamp-2019/bootcamp-app/target/bootcamp-app-1.0.0.jar
+	bundle.replace 113 file:///Users/mac/Documents/bootcamp-2019/bootcamp-app/target/bootcamp-app-1.0.0.jar
 	bundle.refresh
 	```
 
@@ -973,3 +1000,4 @@
 	```
 	bootcamp name=test  query="search index=github"  | parse event
 	```
+	<img src="./image/bootcamp.png">
