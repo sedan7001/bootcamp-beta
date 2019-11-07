@@ -1,252 +1,34 @@
 # bootcamp-2019
 
+네 자그럼 ui개발 파트를 진행해 보겠습니다. 스템0클릭
+
 ## step 0. parser setting
 
-1. issue3597 branch full build
-2. issue3597 cache extract
-3. yarn install
-4. run.sh
-5. export JAVA_HOME=`/usr/libexec/java_home -v 9`
-6. ./run.sh
-7. telnet localhost 7001
-8. bundle.install com.google.code.gson gson 2.8.6
-9. bundle.install commons-cli commons-cli 1.4
-10. bundle.install file:///Users/mac/Documents/splunk-sdk-java-1.6.5.jar
-11. bundle.refresh
-12. bundle.start 000 000 000
-13. pom.xml
-	<details>
-	<summary>pom.xml</summary>
-	<div markdown="1">
+먼저 스텝0부분은 ui개발 환경을 갖추는 부분인데요 서버측 코드까지는 세팅된 상태로 인스턴스를 제공하기로 해서 지금은 바로 다음단계로 넘어가겠습니다. 
 
-	```
-	<project
-		xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd"
-		xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
-		<modelVersion>4.0.0</modelVersion>
-		<groupId>com.logpresso</groupId>
-		<artifactId>bootcamp-app</artifactId>
-		<version>1.0.0</version>
-		<packaging>bundle</packaging>
-		<name>Bootcamp App</name>
-		<build>
-			<plugins>
-				<plugin>
-					<groupId>org.apache.maven.plugins</groupId>
-					<artifactId>maven-compiler-plugin</artifactId>
-					<version>3.3</version>
-					<configuration>
-						<encoding>UTF-8</encoding>
-						<source>8</source>
-						<target>8</target>
-						<debug>true</debug>
-						<optimize>true</optimize>
-						<showDeprecations>true</showDeprecations>
-					</configuration>
-				</plugin>
-				<plugin>
-					<groupId>org.apache.felix</groupId>
-					<artifactId>maven-bundle-plugin</artifactId>
-					<version>4.1.0</version>
-					<extensions>true</extensions>
-					<configuration>
-						<instructions>
-							<Bundle-SymbolicName>com.logpresso.bootcamp</Bundle-SymbolicName>						
-							<Export-Package>
-								com.logpresso.bootcamp.app,
-								com.logpresso.bootcamp.msgbus
-							</Export-Package>
-							<Import-Package>
-								*
-							</Import-Package>
-							<Private-Package>
-								com.logpresso.bootcamp.command,
-								com.logpresso.bootcamp.logger,
-								com.logpresso.bootcamp.model,
-								com.logpresso.bootcamp.parser,
-								com.logpresso.bootcamp.script
-							</Private-Package>
-						</instructions>
-					</configuration>
-				</plugin>
-				<plugin>
-					<groupId>org.apache.felix</groupId>
-					<artifactId>maven-ipojo-plugin</artifactId>
-					<version>1.12.1</version>
-					<executions>
-						<execution>
-							<goals>
-								<goal>ipojo-bundle</goal>
-							</goals>
-						</execution>
-					</executions>
-				</plugin>
-				<plugin>
-					<groupId>com.github.eirslett</groupId>
-					<artifactId>frontend-maven-plugin</artifactId>
-					<version>1.6</version>
-					<configuration>
-						<workingDirectory>src/main/bootcamp</workingDirectory>
-					</configuration>
-					<executions>
-						<execution>
-							<id>install node and yarn</id>
-							<goals>
-								<goal>install-node-and-yarn</goal>
-							</goals>
-							<phase>pre-clean</phase>
-							<configuration>
-								<nodeVersion>v11.7.0</nodeVersion>
-								<yarnVersion>v1.13.0</yarnVersion>
-								<downloadRoot>http://staging.araqne.org/nodejs/dist/</downloadRoot>
-							</configuration>
-						</execution>
-						<execution>
-							<id>yarn install</id>
-							<goals>
-								<goal>yarn</goal>
-							</goals>
-							<configuration>
-								<arguments>install --no-optional</arguments>
-							</configuration>
-						</execution>	
-						<execution>
-							<id>install dependencies</id>
-							<goals>
-								<goal>yarn</goal>
-							</goals>
-							<configuration>
-								<arguments>install --ignore-optional --strict-ssl=false --ignore-scripts</arguments>
-							</configuration>
-						</execution>
-						<execution>
-							<id>build all</id>
-							<goals>
-								<goal>yarn</goal>
-							</goals>
-							<phase>generate-resources</phase>
-							<configuration>
-								<arguments>run build</arguments>
-							</configuration>
-						</execution>
-					</executions>
-				</plugin>
-			</plugins>
-		</build>
-		<repositories>
-			<repository>
-				<id>splunk-artifactory</id>
-				<name>Splunk Releases</name>
-				<url>http://splunk.jfrog.io/splunk/ext-releases-local</url>
-			</repository>
-		</repositories>
-		<dependencies>
-			<dependency>
-				<groupId>org.apache.felix</groupId>
-				<artifactId>org.apache.felix.ipojo</artifactId>
-				<version>1.10.1</version>
-			</dependency>
-			<dependency>
-				<groupId>org.apache.felix</groupId>
-				<artifactId>org.apache.felix.ipojo.annotations</artifactId>
-				<version>1.10.1</version>
-			</dependency>
-			<dependency>
-				<groupId>org.slf4j</groupId>
-				<artifactId>slf4j-api</artifactId>
-				<version>1.7.12</version>
-			</dependency>
-			<dependency>
-				<groupId>org.slf4j</groupId>
-				<artifactId>slf4j-simple</artifactId>
-				<scope>test</scope>
-				<version>1.7.12</version>
-			</dependency>
-			<dependency>
-				<groupId>org.araqne</groupId>
-				<artifactId>araqne-log-api</artifactId>
-				<version>3.12.7</version>
-			</dependency>
-			<dependency>
-				<groupId>org.araqne</groupId>
-				<artifactId>araqne-logdb</artifactId>
-				<version>3.9.1-1</version>
-			</dependency>
-			<dependency>
-				<groupId>org.araqne</groupId>
-				<artifactId>araqne-confdb</artifactId>
-				<version>1.0.2</version>
-			</dependency>
-			<dependency>
-				<groupId>com.splunk</groupId>
-				<artifactId>splunk</artifactId>
-				<version>1.6.5.0</version>
-			</dependency>
-			<dependency>
-				<groupId>org.araqne</groupId>
-				<artifactId>araqne-httpd</artifactId>
-				<version>1.6.4</version>
-			</dependency>
-			<dependency>
-				<groupId>org.araqne</groupId>
-				<artifactId>araqne-msgbus</artifactId>
-				<version>1.12.4</version>
-			</dependency>		
-			<dependency>
-				<groupId>org.araqne</groupId>
-				<artifactId>araqne-webconsole</artifactId>
-				<version>3.18.1-1</version>
-			</dependency>
-			<dependency>
-				<groupId>org.araqne</groupId>
-				<artifactId>araqne-dom</artifactId>
-				<version>3.5.4-2</version>
-			</dependency>
-		</dependencies>
-	</project>
-	```
-	</div>
-	</details>
-
-14. 루트 폴더에 splunk-sdk-java-1.6.5.jar 넣기.
-15. mvn install:install-file -DgroupId=com.splunk -DartifactId=splunk -Dversion=1.6.5.0 -Dpackaging=jar -Dfile=splunk-sdk-java-1.6.5.jar
-16. bootcamp/src/main 에 java 폴더채 넣기
-17. /Users/mac/Documents/bootcamp-2019/bootcamp-app/src/main/resources/metadata.xml 붙여넣기
-18. createSplunkProfile
-	```
-	bootcamp.createSplunkProfile
-	name?
-	test
-	host?
-	172.20.34.2
-	port?
-	8089
-	user?
-	logpresso
-	password?
-	logpresso
-	```
-19. 시스템 설정, 파서, 새 파서 만들기, 부트캠프, 스플렁크 깃헙 이벤트, 다음, event, 완료
-20.	쿼리 테스트 bootcamp name=test  query="search index=github"  | parse event
+혹시 제로상태부터 내가 다 세팅하고 싶다! 이러신분들은 1번부터 20번까지 따라하시면 직접세팅 하실 수 있겠습니다.
 
 
-## step 1 ~ step 11
-- 애플리케이션 생성, 빌드
-- 앱을 로그프레소에 추가
+## 배우는 것들
+- 애플리케이션 생성, 빌드, 로그프레소에 추가
 - 앵귤러 8.0
 - 시나리오 기반 데이터 연동
 - step1 ~ step11 git branch
-
-	안녕하세요 프론트 개발파트 강의를 맡은 개발자 김형태 입니다. 이번 실습에서는 총 11단계에 걸쳐 앱을 생성하고 빌드해서 로그프레소에 추가해 보겠습니다.
-
-	부트캠프 시나리오 기반 데이터를 연동해서 앱에서 보여주는 부분까지 진행하게 될 거구요.
-
-	애플리케이션 개발에 사용할 앵귤러 프레임워크는 가장 최신 버전인 8.0 을 사용하겠습니다.
-
-	중간에 하다가 막힌다거나 하시면 step1번부터 step11번까지 각각의 브랜치로 준비되어 있으니 필요하시면 체크아웃 하셔서 사용하시면 되겠습니다.
+https://github.com/logpresso/bootcamp-2019
 	
-	그럼 먼저 터미널에서 로그프레소를 시작해 주겠습니다. telnet으로 7008번 포트로 접속해 줍니다.
+	여기서부터는 참가자 여러분들이 직접 타이핑을 하시면서 실습을 하시게 될 건데요 여러분들이 직접 앱을 생성하고 빌드해서 로그프레소에 추가하는 부분까지 진행해 보겠습니다.
+	
+	애플리케이션 개발에 사용할 앵귤러 프레임워크 버전은 가장 최신인 8.0 을 사용하겠습니다. 앵귤러를 경험해보지 않으신 분들도 있을텐데요
 
+	앱을 개발하실때 조금이라도 빠르고 쉽게 접근하실수 있도록 핵심개념 몇가지로 준비해 봤구요. 귀한 시간 내서 와주셨는데~
+	
+	앵귤러로 앱을 만드시는데 조금이라도 도움이 될수 있도록 노력해보겠습니다.
+	
+	뒷부분에는 튜토리얼 식으로 조그만 앱을 만들어 볼건데요 이번 부트캠프 시나리오 기반 데이터를 앱에 연동해서 보여주는 부분까지 진행을 하게 되겠습니다.
+
+	이번 실습에 필요한 코드들은 모두 깃헙 리파지토리에 준비되어 있구요 step1번 브랜치부터 step11번 브랜치까지 올라가 있습니다. 중간에 하시다가 막힌다거나 하시면 해당 브랜치를  사용하시면 되겠습니다.
+	
+	그럼 이제 터미널을 열어주시고요 스텝1번부터 타이핑 해보겠습니다.
 
 
 ## step 1. createAppProject
@@ -290,14 +72,12 @@
 ## 2. manifest.json
 - manifest.json
 
-	스텝1에서 앱을 생성하면 manifest.json 파일이 생성되었을 것입니다. 파일을 한번 열어볼까요
-
-	이 파일은, 앞에서 우리가 생상한 앱이 실행될 때의 시작 파라미터와 기본값을 담고 있는데요
-
-	이 메타데이터를 json 기반으로 작성해 줍니다. 이를 통해 앱의 이름, 시작할때 열리게 되는 페이지 등을 지정할 수 있습니다. 
+	실제로 앱을 추가해보면 주로 경로설정 문제를 많이 겪을건데요 뭐 페이지가 안열린다던지 404 에러가 뜬다던지 하는 경우가 있죠. 
 	
-	이 프로젝트에서는 다음과 같은 위치에 넣어줍니다. 
-
+	이 파일만 제대로 설정을 해주시면 아마 앱을 추가하는게 어렵진 않을거에요
+	
+	스텝1에서 createAppProject를 하면 bootcamp-app 폴더에 자동으로 생성이 되었을 건데요. 해당 경로로 복사해주시면 되구요.
+	
 	>`/bootcamp-2019/bootcamp-app/src/main/resources/manifest.json`
 
 	```
@@ -327,24 +107,14 @@
 		"bundle_version": "1.0.0"
 	}
 	```
-	예제 내용은 경로설정 하는 방법을 알려드리려고 현재 열린 파일과는 조금 다르게 설정 해봤는데요 여기서
-
-	`"program_names"` 은 로그프레소 대메뉴에 추가되는 메뉴 이름 부분이구요
-
-	`"program_id"` 는 나중에 생성될 angular.json의  outputPath 폴더명과 일치시켜 줘야 합니다.
-
-	`"app_id"` 는 서블렛에서 URL 맵핑되는 부분이 되겠습니다. 
-
 
 ## 3. Angular-cli 로 프로젝트 생성
 
 - Angular-cli
 
-	앵귤러 cli는 프로젝트 생성부터 템플릿 자동생성, 개발 서버, 배포, 테스트 등을 지원합니다. 
-	
-	이렇게 다양한 기능을 제공하기 때문에 앵귤러 프로젝트를 진행하는데는 필수 개발도구입니다.
+	앵귤러 cli는 프로젝트 생성, 템플릿 자동생성, 개발 서버, 테스트 등등 다양한 기능을 지원하기 때문에 앵귤러 프로젝트를 진행하는데는 필수 개발도구라고 보셔야되요.
 
-	그럼 바로 설치해 보겠습니다. 터미널을 열고 다음 명령어를 입력합니다. 
+	앵귤러로 개발하실때는 꼭 설치를 해주시면 되겠습니다. 
 
 	```
 	yarn global add @angular/cli
@@ -355,7 +125,7 @@
 	```
 - ng 명령어
 
-	설치가 완료되면 이제 ng 명령어를 사용할 수 있는데요 그럼 한번 명령어로 설치된 앵귤러 버전을 확인해 보겠습니다. 현재 버전은 앵귤러8.3.1 버전이네요.
+	앵귤러 cli 설치가 완료되면 이제 ng 명령어를 사용할 수 있는데요 ng버전, 그리고 ng뉴부트캠프 까지 실행을 해 주세요.
 	```
 	ng --version
 	```
@@ -371,17 +141,17 @@
 	```
 
 ## 4. outputPath, base href 경로 수정
-- outputPath
+- angular.json
+	
+	angular.json이랑 index.html 파일을 수정해 주세요
+	여기 outputPath는 step2에서 지정한 program_id랑 일치시켜줘야 되는 부분이구요.
 
-	이번에는 angular.json파일을 열고 outputPath를 수정해 주겠습니다.
-	앵귤러 프로젝트의 빌드 결과가 저장되는 폴더입니다. 이 폴더명이 스텝 2에서 지정한 program_id 로 인식됩니다.
 	>`/bootcamp-2019/bootcamp-app/src/main/bootcamp/angular.json`
 	```
 	"outputPath": "../resources/WEB-INF/bootcamp",
 	```
 
-	이 경로로 들어가셔서 index.html 을 수정하겠습니다. 로그프레소에서 인식하는 html 루트 경로를 맞춰줍니다.
-- base href	
+- index.html	
 	>`/bootcamp-2019/bootcamp-app/src/main/bootcamp/src/index.html`
 	```
 	<base href="./">
@@ -391,21 +161,19 @@
 ## 5. 빌드, 로그프레소 대메뉴에 추가하기
 - ng build
 
-	이제 앞에서 생성한 앵귤러 프로젝트로 생성한 앱을 로그프레소 대메뉴에 추가해 보겠습니다.
-	
-	앵귤러 프로젝트를 빌드해주는 명령어 ng build를 실행해 줍니다.
+	앵귤러 프로젝트를 빌드하려면 ng build를 사용해야 하는데요 빌드가 되고나면 아까 지정한 아웃풋패스에 결과물이 들어잇을거에요
 	>`/bootcamp-2019/bootcamp-app/src/main/bootcamp/`
 	```
 	ng build
 	```
 
-- buildApp
+- logpresso.buildApp
 
-	생성한 앵귤러 프로젝트를 빌드하여 번들 jar파일로 만들어 주겠습니다.
+	로그프레소쩜빌드앱 커맨드를 사용하면 ng build된 소스들을 번들 jar파일로 만들어 줍니다.
 
 	그리고 빌드 후 생성된 번들 jar 파일을 install 해주고 refresh 후에 start 해 줍니다.
 
-	빌드앱을 해주면 로그프레소에 앱이 등록이 되기 때문에 이후에는 
+	최초 한번만 빌드앱을 해주면 로그프레소에 앱이 등록이 되기 때문에 소스를 수정할때마다 매번 번들을 인스톨 해줄 필요는 없구요 그때는 번들을 replace만 해주시면 되겠습니다. 
 
 	```
 	logpresso.buildApp /Users/mac/Documents/bootcamp-2019/bootcamp-app /Users/mac/Documents/bootcamp-2019/bootcamp-app/bootcamp-app-1.0.0.jar
@@ -414,17 +182,17 @@
 	bundle.start 113
 	```
 
-- 맵핑된 URL
+- 맵핑된 URL(step2에서 등록한 app_id)
 
-	한번 서블릿에 맵핑된 URL을 확인해 보겠습니다. 아래 명령어를 입력하시면 확인이 가능하구요. 이미지는 제가 아까 예제로 스텝2에서 지정한 app_id 부분 입니다.
+	httpd.contexts 커맨드는 서블릿에 맵핑된 URL을 확인할때 사용하시면 되구요
 	```
 	httpd.contexts
 	```
 	<img src="./image/servlet.png">
 
-- 등록된 프로그램
+- 등록된 프로그램(step2에서 등록한 program_id)
 
-	스텝2에서 지정한 program_id 는 dom.programs localhost 라고 입력하시면 됩니다.
+	dom.programs localhost는 program_id 를 확인할때 사용하시면 되겠습니다.
 	```
 	dom.programs localhost
 	```
@@ -432,21 +200,25 @@
 
 - 메뉴에 추가된 앱 확인.
 
-	이제 브라우저를 열고 `localhost:8888` 주소를 입력해 보겠습니다. 
+	이제 브라우저를 열고 주소창에 `localhost:8888` 입력해 볼게요. 
 
-	여기까지 잘 진행되었다면 대메뉴 가장 오른쪽에 방금 만든 앱이 추가가 되었을 된 것을 확인할 수 있을 것입니다.
+	여기까지 잘 진행하셨다면 대메뉴 가장 오른쪽에 방금 만든 앱이 추가가 되있을 겁니다. 브라우저를 열고 직접 확인해 보세요.
 
-	현재 URL을 보시면 앞서 step2의 manifest.json에서 설정한 app_id/program_id 를 확인할 수 있습니다.
+	8888뒤에 주소가 bootcamp/bootcamp로 되어있을 건데요 이부분은 step2에서 지정한 app_id/progrma_id 입니다.
+
+		
 	```
 	localhost:8888
 	```
-	<img src="./image/add-menu.png">
+
+	이제 절반정도 진행된것 같은데요 잠시 쉬는시간을 갖고 이어서 진행할게요
 
 ## 6. eediom-sdk, material-cdk
 
-- eediom-sdk
-
-	이제부터는 이번 부트캠프의 시나리오 기반 데이터를 연동하기 위해 필요한 세팅입니다.
+	- eediom-sdk
+	이전 step까지 앱을 생성하고 빌드하고 로그프레소에 추가까지 해보신거구요. 여기부터는 스나리오 기반 데이터 연동에 필요한 부분입니다. 
+	
+	이디엄 sdk를 임포트해서 사용하는 부분은 좀 이따가 다시 나올거구요. 이디엄 sdk랑 머티리얼cdk 두개다 설치를 해 주세요.
 
 	>`/bootcamp-2019/bootcamp-app/src/main/bootcamp/`
 
@@ -475,38 +247,6 @@
 	여기서는 타입스크립트가 컴파일 되어질 ecma스크립트 버전을 수정해 주겠습니다. target과 lib를 수정합니다.
 	>`/bootcamp-2019/bootcamp-app/src/main/bootcamp/tsconfig.json`
 
-	```
-	{
-		"compileOnSave": false,
-		"compilerOptions": {
-			"baseUrl": "./",
-			"outDir": "./dist/out-tsc",
-			"sourceMap": true,
-			"declaration": false,
-			"downlevelIteration": true,
-			"experimentalDecorators": true,
-			"module": "esnext",
-			"moduleResolution": "node",
-			"importHelpers": true,
-			"target": "es5",
-			"typeRoots": [
-			"node_modules/@types"
-			],
-			"lib": [
-			"es2015",
-			"es2016",
-			"es2017",
-			"es2018",
-			"dom"
-			]
-		},
-		"angularCompilerOptions": {
-			"preserveWhitespaces": true,
-			"fullTemplateTypeCheck": true,
-			"strictInjectionParameters": true
-		}
-	}
-	```
 
 - package.json
 
@@ -514,72 +254,16 @@
 
 	>`/bootcamp-2019/bootcamp-app/src/main/bootcamp/package.json`
 
-	```
-	{
-		"name": "test4",
-		"version": "0.0.0",
-		"bin": {
-			"node": "node/node",
-			"yarn": "node/yarn/dist/bin/yarn",
-			"ng": "node/node node_modules/@angular/cli/bin/ng"
-		},
-		"scripts": {
-			"ng": "ng",
-			"start": "ng serve --base-href=/ --open",
-			"build": "ng build --output-hashing=none --prod --build-optimizer=false",
-			"test": "ng test",
-			"lint": "ng lint",
-			"e2e": "ng e2e"
-		},
-		"private": true,
-		"dependencies": {
-			"@angular/animations": "~8.2.11",
-			"@angular/cdk": "~8.2.3",
-			"@angular/common": "~8.2.11",
-			"@angular/compiler": "~8.2.11",
-			"@angular/core": "~8.2.11",
-			"@angular/forms": "~8.2.11",
-			"@angular/material": "^8.2.3",
-			"@angular/platform-browser": "~8.2.11",
-			"@angular/platform-browser-dynamic": "~8.2.11",
-			"@angular/router": "~8.2.11",
-			"eediom-sdk": "https://github.com/logpresso/eediom-sdk.git#v1.0.5",
-			"hammerjs": "^2.0.8",
-			"rxjs": "~6.4.0",
-			"tslib": "^1.10.0",
-			"zone.js": "~0.9.1"
-		},
-		"devDependencies": {
-			"@angular-devkit/build-angular": "~0.803.14",
-			"@angular/cli": "~8.3.14",
-			"@angular/compiler-cli": "~8.2.11",
-			"@angular/language-service": "~8.2.11",
-			"@types/jasmine": "~3.3.8",
-			"@types/jasminewd2": "~2.0.3",
-			"@types/node": "~8.9.4",
-			"codelyzer": "^5.0.0",
-			"jasmine-core": "~3.4.0",
-			"jasmine-spec-reporter": "~4.2.1",
-			"karma": "~4.1.0",
-			"karma-chrome-launcher": "~2.2.0",
-			"karma-coverage-istanbul-reporter": "~2.0.1",
-			"karma-jasmine": "~2.0.1",
-			"karma-jasmine-html-reporter": "^1.4.0",
-			"protractor": "~5.4.0",
-			"ts-node": "~7.0.0",
-			"tslint": "~5.15.0",
-			"typescript": "~3.5.3"
-		}
-	}
+
 	```
 
 ## 8. app.module.ts, app.component.ts
 
 - app.module.ts
 
-	앵귤러 애플리케이션은 많은 모듈들의 집합이라고 할 수 있는데요 
+	앵귤러 애플리케이션은 여러 모듈들의 집합이라고 할 수 있는데요 
 	
-	그 중에서도 이 app모듈은 항상 정의되어 있어야 하는 애플리케이션 루트 모듈로 최상위에 존재하는 유일한 모듈입니다.
+	그 중에서도 이 app모듈은 최상위에 정의되어 있어야 하는 유일한 모듈, 루트모듈 입니다.
 	
 	이곳에서 하위 모듈들을 임포트 하고 컴포넌트에 객체를 주입해 주죠. 간단하게 살펴보겠습니다. 여러 모듈들을 관리하기 위해 @NgModule 장식자를 이용해 모듈을 구성하는데요 
 
@@ -627,7 +311,7 @@
 
 	예제에서는 바인딩 변수들를 이용해 템플릿에서 화면제어를 하도록 했구요 
 	템플릿으로부터 받은 클릭 이벤트에 대한 처리를 수행하는 함수 executeQuery를 등록했습니다.
-	함수 내부에서는 이디엄sdk에 정의된 쿼리 서비스를 이용해 서버에 요청한 결과를 받아 템플릿에 데이터를 반영했습니다.
+	함수 내부에서는 이디엄sdk에 정의된 쿼리 서비스를 이용해 서버에 요청한 결과를 받아 템플릿에 필요한 데이터를 반영했습니다.
 	
 	>`/bootcamp-2019/bootcamp-app/src/main/bootcamp/src/app/app.component.ts`
 
@@ -640,7 +324,7 @@
 	styleUrls: ['./app.component.less']
 	})
 	export class AppComponent {
-		title = 'test4';
+		title = 'bootcamp';
 		query:string = '';
 		result:any = [];
 		runQuery:boolean = false;
@@ -664,169 +348,21 @@
 
 	>`/bootcamp-2019/bootcamp-app/src/main/bootcamp/src/app/app.component.ts`
 
-	<details>
-	<summary>app.component.html</summary>
-	<div markdown="1">
+
+	템플릿을 간단하게 살펴보면 사용자로부터 입력받은 쿼리를 ngModel지시자를 통해 클래스 내부와 템플릿의 pre태그 내부에 양방향 바인딩 되었고 
+	클릭이벤트로 클래스에 정의된 함수를 실행해 runQuery를 true로 변경하고 아래 ngIf가 동작하도록 처리했구요.
+	내부에는 쿼리 결과를 ngFor지시자를 이용해 출력하고 이때 오브젝트 타입으로 찍히기 때문에 json 파이프를 사용해 출력했습니다.
+- eediom-sdk 구버전 적용(eediom-sdk 수정전 임시사용)
+
+	다운로드 폴더에 eediom-sdk 압축풀기.
+	>`/bootcamp-2019/bootcamp-app/src/main/bootcamp/`
 
 	```
-	<style>
-		:host {
-			font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol";
-			font-size: 14px;
-			color: #333;
-			box-sizing: border-box;
-			-webkit-font-smoothing: antialiased;
-			-moz-osx-font-smoothing: grayscale;
-		}
+	yes | cp -rf ../../../../../../Downloads/sdk ./node_modules/eediom-sdk
+	```
 
-		h1,
-		h2,
-		h3,
-		h4,
-		h5,
-		h6 {
-			margin: 8px 0;
-		}
-
-		p {
-			margin: 0;
-		}
-
-
-		.toolbar {
-			height: 60px;
-			display: flex;
-			align-items: center;
-			background-color: #1976d2;
-			color: white;
-			font-weight: 600;
-		}
-
-		.toolbar span {
-			margin-left: 20px;
-		}
-
-		.toolbar img {
-			margin: 0 16px;
-		}
-
-
-		.content {
-			display: flex;
-			margin: 32px auto;
-			padding: 0 16px;
-			max-width: 960px;
-			flex-direction: column;
-			align-items: center;
-		}
-
-
-		.card-container {
-			display: flex;
-			flex-wrap: wrap;
-			justify-content: center;
-			margin-top: 16px;
-		}
-
-		.card {
-			border-radius: 4px;
-			border: 1px solid #eee;
-			background-color: #fafafa;
-			height: 40px;
-			width: 200px;
-			margin: 0 8px 16px;
-			padding: 16px;
-			display: flex;
-			flex-direction: row;
-			justify-content: center;
-			align-items: center;
-			transition: all 0.2s ease-in-out;
-			line-height: 24px;
-		}
-
-		.card-container .card:not(:last-child) {
-			margin-right: 0;
-		}
-
-		.card.card-small {
-			height: 16px;
-			width: 168px;
-		}
-
-		.card-container .card:not(.highlight-card) {
-			cursor: pointer;
-		}
-
-		.card-container .card:not(.highlight-card):hover {
-			transform: translateY(-3px);
-			box-shadow: 0 4px 17px rgba(black, 0.35);
-		}
-
-		.card-container .card:not(.highlight-card):hover .material-icons path {
-			fill: rgb(105, 103, 103);
-		}
-
-		.card.highlight-card {
-			background-color: #1976d2;
-			color: white;
-			font-weight: 600;
-			border: none;
-			width: auto;
-			min-width: 30%;
-			position: relative;
-		}
-
-		.card.card.highlight-card span {
-			margin-left: 60px;
-		}
-
-
-		a,
-		a:visited,
-		a:hover {
-			color: #1976d2;
-			text-decoration: none;
-		}
-
-		a:hover {
-			color: #125699;
-		}
-
-		.terminal {
-			position: relative;
-			width: 80%;
-			max-width: 600px;
-			border-radius: 6px;
-			padding-top: 45px;
-			margin-top: 8px;
-			overflow: hidden;
-			background-color: rgb(15, 15, 16);
-		}
-
-		.terminal::before {
-			content: "\2022 \2022 \2022";
-			position: absolute;
-			top: 0;
-			left: 0;
-			height: 4px;
-			background: rgb(58, 58, 58);
-			color: #c2c3c4;
-			width: 100%;
-			font-size: 2rem;
-			line-height: 0;
-			padding: 14px 0;
-			text-indent: 4px;
-		}
-
-		.terminal pre {
-			font-family: SFMono-Regular,Consolas,Liberation Mono,Menlo,monospace;
-			color: white;
-			padding: 0 1rem 1rem;
-			margin: 0;
-		}
-	</style>
-
-	<div class="toolbar" role="banner">
+	```
+		<div class="toolbar" role="banner">
 		<span>Bootcamp</span>
 	</div>
 
@@ -845,206 +381,17 @@
 				<pre *ngFor="let item of result">{{item | json}}</pre>
 		</div>
 	</div>
-
-	<router-outlet></router-outlet>
-	```
-	</div>
-	</details>
-
-	템플릿을 간단하게 살펴보면 사용자로부터 입력받은 쿼리를 ngModel지시자를 통해 클래스 내부와 템플릿의 pre태그 내부에 양방향 바인딩 되었고 
-	클릭이벤트로 클래스에 정의된 함수를 실행해 runQuery를 true로 변경하고 아래 ngIf가 동작하도록 처리했구요.
-	내부에는 쿼리 결과를 ngFor지시자를 이용해 출력하고 이때 오브젝트 타입으로 찍히기 때문에 json 파이프를 사용해 출력했습니다.
-- eediom-sdk 구버전 적용(eediom-sdk 수정전 임시사용)
-
-	다운로드 폴더에 eediom-sdk 압축풀기.
-	>`/bootcamp-2019/bootcamp-app/src/main/bootcamp/`
-
-	```
-	yes | cp -rf ../../../../../../Downloads/sdk ./node_modules/eediom-sdk
 	```
 
 - pom.xml 수정(eediom-sdk 수정전 임시사용)
-	<details>
-	<summary>pom.xml</summary>
-	<div markdown="1">
-
-	```
-	<project
-		xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd"
-		xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
-		<modelVersion>4.0.0</modelVersion>
-		<groupId>com.logpresso</groupId>
-		<artifactId>bootcamp-app</artifactId>
-		<version>1.0.0</version>
-		<packaging>bundle</packaging>
-		<name>Bootcamp App</name>
-		<build>
-			<plugins>
-				<plugin>
-					<groupId>org.apache.maven.plugins</groupId>
-					<artifactId>maven-compiler-plugin</artifactId>
-					<version>3.3</version>
-					<configuration>
-						<encoding>UTF-8</encoding>
-						<source>8</source>
-						<target>8</target>
-						<debug>true</debug>
-						<optimize>true</optimize>
-						<showDeprecations>true</showDeprecations>
-					</configuration>
-				</plugin>
-				<plugin>
-					<groupId>org.apache.felix</groupId>
-					<artifactId>maven-bundle-plugin</artifactId>
-					<version>4.1.0</version>
-					<extensions>true</extensions>
-					<configuration>
-						<instructions>
-							<Bundle-SymbolicName>com.logpresso.bootcamp</Bundle-SymbolicName>						
-							<Export-Package>
-								com.logpresso.bootcamp.app,
-								com.logpresso.bootcamp.msgbus
-							</Export-Package>
-							<Import-Package>
-								*
-							</Import-Package>
-							<Private-Package>
-								com.logpresso.bootcamp.command,
-								com.logpresso.bootcamp.logger,
-								com.logpresso.bootcamp.model,
-								com.logpresso.bootcamp.parser,
-								com.logpresso.bootcamp.script
-							</Private-Package>
-						</instructions>
-					</configuration>
-				</plugin>
-				<plugin>
-					<groupId>org.apache.felix</groupId>
-					<artifactId>maven-ipojo-plugin</artifactId>
-					<version>1.12.1</version>
-					<executions>
-						<execution>
-							<goals>
-								<goal>ipojo-bundle</goal>
-							</goals>
-						</execution>
-					</executions>
-				</plugin>
-				<plugin>
-					<groupId>com.github.eirslett</groupId>
-					<artifactId>frontend-maven-plugin</artifactId>
-					<version>1.6</version>
-					<configuration>
-						<workingDirectory>src/main/bootcamp</workingDirectory>
-					</configuration>
-					<executions>
-						<execution>
-							<id>install node and yarn</id>
-							<goals>
-								<goal>install-node-and-yarn</goal>
-							</goals>
-							<phase>pre-clean</phase>
-							<configuration>
-								<nodeVersion>v11.7.0</nodeVersion>
-								<yarnVersion>v1.13.0</yarnVersion>
-								<downloadRoot>http://staging.araqne.org/nodejs/dist/</downloadRoot>
-							</configuration>
-						</execution>
-						<execution>
-							<id>build all</id>
-							<goals>
-								<goal>yarn</goal>
-							</goals>
-							<phase>generate-resources</phase>
-							<configuration>
-								<arguments>run build</arguments>
-							</configuration>
-						</execution>
-					</executions>
-				</plugin>
-			</plugins>
-		</build>
-		<repositories>
-			<repository>
-				<id>splunk-artifactory</id>
-				<name>Splunk Releases</name>
-				<url>http://splunk.jfrog.io/splunk/ext-releases-local</url>
-			</repository>
-		</repositories>
-		<dependencies>
-			<dependency>
-				<groupId>org.apache.felix</groupId>
-				<artifactId>org.apache.felix.ipojo</artifactId>
-				<version>1.10.1</version>
-			</dependency>
-			<dependency>
-				<groupId>org.apache.felix</groupId>
-				<artifactId>org.apache.felix.ipojo.annotations</artifactId>
-				<version>1.10.1</version>
-			</dependency>
-			<dependency>
-				<groupId>org.slf4j</groupId>
-				<artifactId>slf4j-api</artifactId>
-				<version>1.7.12</version>
-			</dependency>
-			<dependency>
-				<groupId>org.slf4j</groupId>
-				<artifactId>slf4j-simple</artifactId>
-				<scope>test</scope>
-				<version>1.7.12</version>
-			</dependency>
-			<dependency>
-				<groupId>org.araqne</groupId>
-				<artifactId>araqne-log-api</artifactId>
-				<version>3.12.7</version>
-			</dependency>
-			<dependency>
-				<groupId>org.araqne</groupId>
-				<artifactId>araqne-logdb</artifactId>
-				<version>3.9.1-1</version>
-			</dependency>
-			<dependency>
-				<groupId>org.araqne</groupId>
-				<artifactId>araqne-confdb</artifactId>
-				<version>1.0.2</version>
-			</dependency>
-			<dependency>
-				<groupId>com.splunk</groupId>
-				<artifactId>splunk</artifactId>
-				<version>1.6.5.0</version>
-			</dependency>
-			<dependency>
-				<groupId>org.araqne</groupId>
-				<artifactId>araqne-httpd</artifactId>
-				<version>1.6.4</version>
-			</dependency>
-			<dependency>
-				<groupId>org.araqne</groupId>
-				<artifactId>araqne-msgbus</artifactId>
-				<version>1.12.4</version>
-			</dependency>		
-			<dependency>
-				<groupId>org.araqne</groupId>
-				<artifactId>araqne-webconsole</artifactId>
-				<version>3.18.1-1</version>
-			</dependency>
-			<dependency>
-				<groupId>org.araqne</groupId>
-				<artifactId>araqne-dom</artifactId>
-				<version>3.5.4-2</version>
-			</dependency>
-		</dependencies>
-	</project>
-	```
-	</div>
-	</details>
+	
 
 
 ## 10. 메이븐 빌드, 번들 교체
 
 - mvn clean install, bundle.replace
 
-	pom.xml 파일이 위차한 경로에서 빌드해 줍니다.
+	pom.xml 파일이 위차한 경로에서 빌드를 해주세요.
 
 	빌드 후 생성된 번들을 replace 하고 refresh 해 줍니다.
 	>`/bootcamp-2019/bootcamp-app/`
