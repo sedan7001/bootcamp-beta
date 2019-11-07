@@ -577,6 +577,20 @@
 
 - app.module.ts
 
+	앵귤러 애플리케이션은 많은 모듈들의 집합이라고 할 수 있는데요 
+	
+	그 중에서도 이 app모듈은 항상 정의되어 있어야 하는 애플리케이션 루트 모듈로 최상위에 존재하는 유일한 모듈입니다.
+	
+	이곳에서 하위 모듈들을 임포트 하고 컴포넌트에 객체를 주입해 주죠. 간단하게 살펴보겠습니다. 여러 모듈들을 관리하기 위해 @NgModule 장식자를 이용해 모듈을 구성하는데요 
+
+	디클라레이션즈 속성에는 컴포넌트나 파이프를 선언해주고, 임포트에는 Angular가 브라우저 위에서 동작하기위해 필요한 브라우저모듈, 애플리케이션에서 라우팅을 수행하는 라우팅 모듈,
+	
+	템플릿에서 사용하는 NgModel지시자 등이 포함된 폼 모듈 을 선언해 줍니다.
+		
+	프로바이더에는 애플리케이션 전역에서 사용할 서비스를 등록해주고, 부트스트랩에는 최상위 앱컴포넌트를 등록한 다음 앱모듈을 export 해주면 되겠습니다.
+
+	예제에서는 이디엄sdk의 서비스 모듈과, 쿼리 서비스를 사용하기 위해 앱모듈에 등록을 해주었습니다.
+
 	>`/bootcamp-2019/bootcamp-app/src/main/bootcamp/src/app/app.module.ts`
 
 	```
@@ -595,10 +609,10 @@
 			BrowserModule,
 			AppRoutingModule,
 			BrowserAnimationsModule,
+			FormsModule,
 			ServiceModule.forRoot({
 				productName: 'Araqne'
-			}),
-			FormsModule
+			})
 		],
 		providers: [QueryService],
 		bootstrap: [AppComponent]
@@ -609,6 +623,12 @@
 
 - app.component.ts
 
+	앱 컴포넌트에서는 클래스 영역에 템플릿 데이터 출력과 관련된 로직을 작성해 주시면 되는데요.
+
+	예제에서는 바인딩 변수들를 이용해 템플릿에서 화면제어를 하도록 했구요 
+	템플릿으로부터 받은 클릭 이벤트에 대한 처리를 수행하는 함수 executeQuery를 등록했습니다.
+	함수 내부에서는 이디엄sdk에 정의된 쿼리 서비스를 이용해 서버에 요청한 결과를 받아 템플릿에 데이터를 반영했습니다.
+	
 	>`/bootcamp-2019/bootcamp-app/src/main/bootcamp/src/app/app.component.ts`
 
 	```
@@ -831,7 +851,9 @@
 	</div>
 	</details>
 
-
+	템플릿을 간단하게 살펴보면 사용자로부터 입력받은 쿼리를 ngModel지시자를 통해 클래스 내부와 템플릿의 pre태그 내부에 양방향 바인딩 되었고 
+	클릭이벤트로 클래스에 정의된 함수를 실행해 runQuery를 true로 변경하고 아래 ngIf가 동작하도록 처리했구요.
+	내부에는 쿼리 결과를 ngFor지시자를 이용해 출력하고 이때 오브젝트 타입으로 찍히기 때문에 json 파이프를 사용해 출력했습니다.
 - eediom-sdk 구버전 적용(eediom-sdk 수정전 임시사용)
 
 	다운로드 폴더에 eediom-sdk 압축풀기.
